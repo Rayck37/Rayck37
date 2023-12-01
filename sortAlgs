@@ -1,0 +1,106 @@
+#include <iostream>
+#include <array>
+#include <algorithm>
+#include <string>
+#include <cmath>
+#include <chrono>
+
+#define size_of_array 6
+using namespace std;
+
+     void insertionSort(array<int, 6>& items)
+    {
+        for(size_t next = 1; next<items.size();++next){
+            int insert = items[next];
+            size_t moveIndex = next;
+
+            while((moveIndex>0)&& (items[moveIndex-1]>insert)){
+                items[moveIndex]=items[moveIndex - 1];
+                --moveIndex;
+            }
+            items[moveIndex]= insert;
+        }
+    }
+
+     void selectionSort(array<int, 6>& items){
+// loop over size - 1 elements
+        for (size_t i = 0; i < items.size() - 1; ++i) {
+        size_t indexOfSmallest = i; // will hold index of smallest element
+// loop to find index of smallest element
+        for (size_t index = i + 1; index < items.size(); ++index) {
+        if (items[index] < items[indexOfSmallest]) {
+        indexOfSmallest = index;
+     }
+   }
+// swap the elements at positions i and indexOfSmallest
+        int hold = items[i];
+        items[i] = items[indexOfSmallest];
+        items[indexOfSmallest] = hold;
+    }
+}
+void merge(array<int, 6>& items, size_t left, size_t middle1, size_t middle2, size_t right) {
+    size_t leftIndex{left}; // index into left subarray
+    size_t rightIndex{middle2}; // index into right subarray
+    size_t combinedIndex{left}; // index into temporary working array
+        array<int, 5> combined; // working array
+// merge arrays until reaching end of either
+        while (leftIndex <= middle1 && rightIndex <= right) {
+// place smaller of two current elements into result and move to next space in array
+            if (items[leftIndex] <= items[rightIndex]) {
+                combined[combinedIndex++] = items[leftIndex++];
+            }
+            else {
+                combined[combinedIndex++] = items[rightIndex++];
+        }
+}
+    if (leftIndex == middle2) { // if at end of left array
+    while (rightIndex <= right) { // copy in rest of right array
+        combined[combinedIndex++] = items[rightIndex++];
+    }
+}
+else { // at end of right array
+    while (leftIndex <= middle1) { // copy in rest of left array
+        combined[combinedIndex++] = items[leftIndex++];
+    }
+}
+// copy values back into original array
+for (size_t i = left; i <= right; ++i) {
+        items[i] = combined[i];
+    }
+}
+
+    void mergeSort(array<int, 6>& items, size_t low, size_t high) {
+// test base case; size of array equals 1
+        if ((high - low) >= 1) { // if not base case
+            size_t middle1 = (low + high) / 2; // calculate middle of array
+            size_t middle2 = middle1 + 1; // calculate next element over
+// split array in half, sort each half (recursive calls)
+            mergeSort(items, low, middle1); // first half of array
+            mergeSort(items, middle2, high); // second half of array
+// merge two sorted arrays after split calls return
+            merge(items, low, middle1, middle2, high);
+    }
+}
+
+int main(){
+   /*  array<int, 4> values{1,2,3,4};
+    ostream_iter<int> output{cout," "};
+
+    cout<<"values are: ";
+    copy(values.cbegin(),values.cend(),output);
+
+    cout<<"\nDisplay each element multipuly by 2:";
+   
+    for_each(values.cbegin(),values.cend(),[](auto i){cout<<i*2<<" ";}); */
+    auto start = std::chrono::high_resolution_clock::now();
+    array<int,6> a{4,3,5,100,1,99};// template <typename T, size_t size>
+    //insertionSort(a);
+    //selectionSort(a);
+    mergeSort(a,0,6);
+    for (int i = 0;i<a.size();i++){
+        cout<<a[i]<<endl;
+    }
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    std::cout << "Time taken by the program: " << duration.count() << " seconds" << std::endl;
+}
